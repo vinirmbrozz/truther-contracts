@@ -1,0 +1,8 @@
+version: v2
+plugins:
+  - plugin: buf.build/protocolbuffers/js
+    out: gen/node
+  - plugin: buf.build/protocolbuffers/go
+    out: gen/go
+  - plugin: buf.build/protocolbuffers/python
+    out: gen/python

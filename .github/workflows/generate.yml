@@ -1,0 +1,20 @@
+name: Generate SDKs
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: bufbuild/buf-setup-action@v1
+      
+      - name: Generate Code
+        run: |
+          buf generate
+          
+      - name: Commit Changes
+        run: |
+          git config --global user.name "Truther Bot"
+          git config --global user.email "bot@truther.ai"
+          git add .
+          git commit -m "chore: update generated sdks" || echo "No changes"
+          git push
