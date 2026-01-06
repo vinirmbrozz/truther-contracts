@@ -13,7 +13,7 @@ jobs:
       - name: Run Protoc Compilation
         run: |
           docker run --rm -v $(pwd):/workspace -w /workspace jaegertracing/protobuf:latest \
-            protoc --proto_path=proto \
+            protoc --proto_path=. \
             --js_out=import_style=commonjs,binary:gen/node \
             --go_out=gen/go --go_opt=paths=source_relative \
             --python_out=gen/python \
