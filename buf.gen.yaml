@@ -1,8 +1,10 @@
-version: v2
+version: v1
 plugins:
-  - plugin: buf.build/protocolbuffers/js
+  - name: js
     out: gen/node
-  - plugin: buf.build/protocolbuffers/go
+    opt: import_style=commonjs,binary
+  - name: go
     out: gen/go
-  - plugin: buf.build/protocolbuffers/python
+    opt: paths=source_relative
+  - name: python
     out: gen/python
