@@ -6,21 +6,19 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Install Protoc
+        run: sudo apt-get install -y protobuf-compiler
+
       - name: Create Output Directories
         run: mkdir -p gen/node gen/go gen/python
 
-      - name: Run Protoc Compilation
+      - name: Compile Protobuf
         run: |
-          docker run --rm -v $(pwd):/workspace -w /workspace jaegertracing/protobuf:latest \
-            protoc \
-            --proto_path=. \
-            --js_out=import_style=commonjs,binary:./gen/node \
-            --go_out=./gen/go --go_opt=paths=source_relative \
-            --python_out=./gen/python \
-            proto/transaction.proto
-
-      - name: Fix permissions
-        run: sudo chown -R $USER:$USER gen
+          protoc --proto_path=proto \
+          --js_out=import_style=commonjs,binary:gen/node \
+          --go_out=gen/go --go_opt=paths=source_relative \
+          --python_out=gen/python \
+          proto/transaction.proto
 
       - name: Commit and Push
         uses: stefanzweifel/git-auto-commit-action@v4
