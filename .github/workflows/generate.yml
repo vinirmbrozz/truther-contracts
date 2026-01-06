@@ -9,21 +9,19 @@ jobs:
       - name: Create Output Directories
         run: mkdir -p gen/node gen/go gen/python
 
-      # Rodamos o docker apenas para gerar os arquivos
       - name: Run Protoc Compilation
         run: |
           docker run --rm -v $(pwd):/workspace -w /workspace jaegertracing/protobuf:latest \
-            protoc --proto_path=. \
-            --js_out=import_style=commonjs,binary:gen/node \
-            --go_out=gen/go --go_opt=paths=source_relative \
-            --python_out=gen/python \
+            protoc \
+            --proto_path=. \
+            --js_out=import_style=commonjs,binary:./gen/node \
+            --go_out=./gen/go --go_opt=paths=source_relative \
+            --python_out=./gen/python \
             proto/transaction.proto
 
-      # Ajusta as permissões dos arquivos criados pelo Docker
       - name: Fix permissions
         run: sudo chown -R $USER:$USER gen
 
-      # Faz o commit usando o ambiente do GitHub que já tem Git
       - name: Commit and Push
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
