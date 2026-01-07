@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "SDK de contratos gerados automaticamente",
   "main": "index.js",
+  "types": "index.d.ts",
   "dependencies": {
     "google-protobuf": "^3.21.2"
   }
