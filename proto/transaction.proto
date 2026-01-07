@@ -8,7 +8,7 @@ message PredictiveAnalyzer {
   string reason = 2;
   string cardId = 3;
   string userId = 4;
-  string walletAddress = 5;
+  string walletAddress = 954859;
   string allowance = 6;
 }
 
