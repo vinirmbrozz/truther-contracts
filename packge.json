@@ -1,0 +1,9 @@
+{
+  "name": "truther-contracts",
+  "version": "1.0.0",
+  "description": "SDK de contratos gerados automaticamente",
+  "main": "gen/node/transaction_pb.js",
+  "dependencies": {
+    "google-protobuf": "^3.21.2"
+  }
+}
