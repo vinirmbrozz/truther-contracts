@@ -1,19 +1,20 @@
 version: v1
 plugins:
-  # 1. NODE.JS (TypeScript/JavaScript moderno)
-  - remote: buf.build/stephenh/ts-proto
+  # 1. NODE.JS (TypeScript)
+  - name: ts-proto
     out: gen/node
     opt:
       - esModuleInterop=true
       - outputJsonMethods=true
       - forceLong=string
+    strategy: all
 
-  # 2. GO (Configurado para pacotes Go)
-  - remote: buf.build/protocolbuffers/go
+  # 2. GO
+  - name: go
     out: gen/go
     opt:
       - paths=source_relative
 
-  # 3. PYTHON (Configurado para o padrão Python 3)
-  - remote: buf.build/protocolbuffers/python
+  # 3. PYTHON
+  - name: python
     out: gen/python
