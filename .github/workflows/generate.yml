@@ -70,6 +70,27 @@ jobs:
           require google.golang.org/protobuf v1.31.0
           EOF
 
+      - name: Compile Protobuf - Python
+        run: |
+          protoc --proto_path=proto \
+            --python_out=gen/python \
+            proto/transaction.proto
+
+      - name: Create Python Package Structure
+        run: |
+          # Criar estrutura de pacote
+          mkdir -p gen/python/truther_contracts_sdk
+          
+          # Mover arquivo gerado para dentro do pacote
+          mv gen/python/transaction_pb2.py gen/python/truther_contracts_sdk/
+          
+          # Criar __init__.py que exporta as classes
+          cat > gen/python/truther_contracts_sdk/__init__.py << 'EOF'
+          from .transaction_pb2 import Transaction, PredictiveAnalyzer
+
+          __all__ = ["Transaction", "PredictiveAnalyzer"]
+          EOF
+
       - name: Create Python setup.py
         run: |
           cat > gen/python/setup.py << 'EOF'
@@ -88,9 +109,12 @@ jobs:
           )
           EOF
 
-      - name: Create Python __init__.py
+      - name: Create Python MANIFEST.in
         run: |
-          touch gen/python/__init__.py
+          cat > gen/python/MANIFEST.in << 'EOF'
+          recursive-include truther_contracts_sdk *.py
+          include truther_contracts_sdk/*.py
+          EOF
 
       - name: Compile Protobuf - TypeScript
         run: |
