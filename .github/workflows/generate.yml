@@ -1,4 +1,4 @@
-name: Generate TypeScript SDK
+name: Generate SDKs (TypeScript, Go, Python)
 on: [push]
 
 jobs:
@@ -12,19 +12,36 @@ jobs:
         with:
           node-version: '18'
 
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
       - name: Install Protoc
         run: |
           sudo apt-get update && sudo apt-get install -y protobuf-compiler
 
-      - name: Install TypeScript Protobuf Plugin
+      - name: Install Protobuf Plugins
         run: |
+          # TypeScript plugin
           npm install ts-proto
+          
+          # Go plugin
+          go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
+          
+          # Python plugin (built-in with protoc)
 
-      - name: Create Output Directory
+      - name: Create Output Directories
         run: |
-          mkdir -p gen/typescript
+          mkdir -p gen/typescript gen/go gen/python
 
-      - name: Create Package.json for SDK
+      - name: Create TypeScript Package.json
         run: |
           cat > gen/typescript/package.json << 'EOF'
           {
@@ -43,7 +60,39 @@ jobs:
           }
           EOF
 
-      - name: Compile Protobuf to TypeScript
+      - name: Create Go go.mod
+        run: |
+          cat > gen/go/go.mod << 'EOF'
+          module github.com/vinirmbrozz/truther-contracts/gen/go
+
+          go 1.21
+
+          require google.golang.org/protobuf v1.31.0
+          EOF
+
+      - name: Create Python setup.py
+        run: |
+          cat > gen/python/setup.py << 'EOF'
+          from setuptools import setup, find_packages
+
+          setup(
+              name="truther-contracts-sdk",
+              version="1.0.0",
+              description="Python SDK for Truther Contracts",
+              author="vinirmbrozz",
+              packages=find_packages(),
+              install_requires=[
+                  "protobuf>=4.24.0",
+              ],
+              python_requires=">=3.8",
+          )
+          EOF
+
+      - name: Create Python __init__.py
+        run: |
+          touch gen/python/__init__.py
+
+      - name: Compile Protobuf - TypeScript
         run: |
           protoc --proto_path=proto \
             --plugin=protoc-gen-ts_proto=$(npm root)/ts-proto/protoc-gen-ts_proto \
@@ -51,8 +100,119 @@ jobs:
             --ts_proto_opt=esModuleInterop=true \
             proto/transaction.proto
 
+      - name: Compile Protobuf - Go
+        run: |
+          protoc --proto_path=proto \
+            --go_out=gen/go \
+            --go_opt=paths=source_relative \
+            proto/transaction.proto
+
+      - name: Compile Protobuf - Python
+        run: |
+          protoc --proto_path=proto \
+            --python_out=gen/python \
+            proto/transaction.proto
+
+      - name: Create README files
+        run: |
+          # TypeScript README
+          cat > gen/typescript/README.md << 'EOF'
+          # Truther Contracts SDK - TypeScript
+
+          ## Installation
+          ```bash
+          npm install git+https://github.com/vinirmbrozz/truther-contracts.git#main:gen/typescript
+          ```
+
+          ## Usage
+          ```typescript
+          import { Transaction, PredictiveAnalyzer } from '@truther/contracts-sdk';
+
+          const transaction: Transaction = {
+            transactionAmount: "100.00",
+            predictiveAnalyzer: {
+              isAllowed: true,
+              reason: "Approved",
+              cardId: "card-123",
+              userId: "user-456",
+              walletAddress: "0x...",
+              allowance: "5000.00"
+            },
+            final_decision: "APPROVED"
+          };
+          ```
+          EOF
+
+          # Go README
+          cat > gen/go/README.md << 'EOF'
+          # Truther Contracts SDK - Go
+
+          ## Installation
+          ```bash
+          go get github.com/vinirmbrozz/truther-contracts/gen/go
+          ```
+
+          ## Usage
+          ```go
+          package main
+
+          import (
+              "fmt"
+              pb "github.com/vinirmbrozz/truther-contracts/gen/go/transaction"
+          )
+
+          func main() {
+              tx := &pb.Transaction{
+                  TransactionAmount: "100.00",
+                  PredictiveAnalyzer: &pb.PredictiveAnalyzer{
+                      IsAllowed: true,
+                      Reason: "Approved",
+                      CardId: "card-123",
+                      UserId: "user-456",
+                      WalletAddress: "0x...",
+                      Allowance: "5000.00",
+                  },
+                  FinalDecision: "APPROVED",
+              }
+              fmt.Println(tx)
+          }
+          ```
+          EOF
+
+          # Python README
+          cat > gen/python/README.md << 'EOF'
+          # Truther Contracts SDK - Python
+
+          ## Installation
+          ```bash
+          pip install git+https://github.com/vinirmbrozz/truther-contracts.git#subdirectory=gen/python
+          ```
+
+          ## Usage
+          ```python
+          from transaction_pb2 import Transaction, PredictiveAnalyzer
+
+          analyzer = PredictiveAnalyzer(
+              isAllowed=True,
+              reason="Approved",
+              cardId="card-123",
+              userId="user-456",
+              walletAddress="0x...",
+              allowance="5000.00"
+          )
+
+          transaction = Transaction(
+              transactionAmount="100.00",
+              predictiveAnalyzer=analyzer,
+              final_decision="APPROVED"
+          )
+
+          print(transaction)
+          ```
+          EOF
+
       - name: Commit and Push
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: "chore: update generated TypeScript SDK [skip ci]"
-          file_pattern: 'gen/typescript/*'
+          commit_message: "chore: update generated SDKs (TypeScript, Go, Python) [skip ci]"
+          file_pattern: 'gen/*'
