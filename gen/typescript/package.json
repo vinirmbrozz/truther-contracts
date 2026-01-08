@@ -2,7 +2,7 @@
   "name": "@truther/contracts-sdk",
   "version": "1.0.0",
   "description": "TypeScript SDK for Truther Contracts",
-  "main": "transaction.js",
+  "main": "transaction.ts",
   "types": "transaction.ts",
   "keywords": ["truther", "contracts", "protobuf"],
   "author": "vinirmbrozz",
