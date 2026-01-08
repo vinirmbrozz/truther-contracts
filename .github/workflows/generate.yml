@@ -30,7 +30,7 @@ jobs:
           # Mas como no buf.gen.yaml usamos remote, o Buf cuida disso!
 
       - name: Run Buf Generate
-        run: buf generate
+        run: npx buf generate
 
       - name: Build Node SDK (TypeScript to JavaScript)
         run: |
