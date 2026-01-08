@@ -1,39 +1,44 @@
-name: Generate SDKs
-on: [push]
+name: Generate All SDKs
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'proto/**'          # Só roda se mudar algo no contrato
+      - 'buf.gen.yaml'
+      - 'package.json'
+
 jobs:
   generate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '20'
+
+      - name: Setup Buf
+        uses: bufbuild/buf-setup-action@v1
 
       - name: Install Dependencies
         run: |
-          sudo apt-get install -y protobuf-compiler
-          npm install ts-proto typescript
+          npm install
+          # Precisamos do protoc-gen-go se não usarmos plugins remotos
+          # Mas como no buf.gen.yaml usamos remote, o Buf cuida disso!
 
-      - name: Generate TypeScript Code
-        run: |
-          mkdir -p gen/node
-          protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto \
-            --ts_proto_out=gen/node \
-            --ts_proto_opt=esModuleInterop=true,outputJsonMethods=true \
-            --proto_path=proto \
-            proto/transaction.proto
+      - name: Run Buf Generate
+        run: buf generate
 
-      - name: Build Library
+      - name: Build Node SDK (TypeScript to JavaScript)
         run: |
-          # Cria um index.ts que exporta tudo
-          echo "export * from './gen/node/transaction.js';" > index.ts
-          # Compila o TS para JS + Declarações de Tipo
-          npx tsc index.ts --declaration --esModuleInterop --module ESNext --target ES2020 --moduleResolution node --outDir dist
+          # Transforma o gen/node/*.ts em dist/*.js para o seu teste
+          npx tsc
 
       - name: Commit and Push
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: "feat: professional sdk generation [skip ci]"
-          file_pattern: 'dist/* gen/* index.ts'
+          commit_message: "chore: update SDKs for Node, Go and Python [skip ci]"
+          file_pattern: 'gen/** dist/** index.ts'

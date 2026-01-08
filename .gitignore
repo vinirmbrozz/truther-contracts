@@ -1,0 +1,18 @@
+# Dependências
+node_modules/
+package-lock.json
+yarn.lock
+
+# Cache e Logs
+.npm
+npm-debug.log*
+.eslintcache
+
+# Sistema e IDE
+.DS_Store
+.vscode/
+.idea/
+Thumbs.db
+
+# Temporários de Build
+*.tsbuildinfo
