@@ -1,37 +1,28 @@
-name: Generate SDKs
+name: Generate All SDKs
 on: [push]
 jobs:
   generate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '20'
 
-      - name: Install Protoc and Plugins
-        run: |
-          sudo apt-get update && sudo apt-get install -y protobuf-compiler
-          # Instalamos o plugin de JS e o compilador de Go
-          npm install -g protoc-gen-js
-          go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
+      - name: Setup Buf
+        uses: bufbuild/buf-setup-action@v1
 
-      - name: Create Output Directories
-        run: mkdir -p gen/node gen/go gen/python
+      - name: Install Node Tools
+        run: npm install
 
-      - name: Compile Protobuf
-        run: |
-          protoc --proto_path=proto \
-          --js_out=import_style=commonjs,binary:gen/node \
-          --go_out=gen/go --go_opt=paths=source_relative \
-          --python_out=gen/python \
-          proto/transaction.proto
+      - name: Generate All SDKs (Node, Go, Python)
+        run: npx buf generate
+
+      - name: Build TypeScript for Node
+        run: npx tsc
 
       - name: Commit and Push
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: "chore: update generated SDKs [skip ci]"
-          file_pattern: 'gen/*'
+          commit_message: "chore: build SDKs for Node, Go and Python [skip ci]"
+          file_pattern: 'gen/** dist/** index.ts'
