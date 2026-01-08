@@ -1,19 +1,22 @@
 version: v1
 plugins:
-  # TypeScript/Node (Plugin remoto - não precisa instalar nada no PATH)
-  - remote: buf.build/stephenh/ts-proto
+  # TypeScript/Node
+  - name: ts-proto
+    remote: buf.build/stephenh/plugins/ts-proto:v1.150.0-1
     out: gen/node
     opt:
       - esModuleInterop=true
       - outputJsonMethods=true
       - forceLong=string
 
-  # Go (Plugin remoto)
-  - remote: buf.build/protocolbuffers/go
+  # Go
+  - name: go
+    remote: buf.build/protocolbuffers/plugins/go:v1.31.0-1
     out: gen/go
     opt:
       - paths=source_relative
 
-  # Python (Plugin remoto)
-  - remote: buf.build/protocolbuffers/python
+  # Python
+  - name: python
+    remote: buf.build/protocolbuffers/plugins/python:v24.4.0-1
     out: gen/python
