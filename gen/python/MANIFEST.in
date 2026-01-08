@@ -1,0 +1,2 @@
+recursive-include truther_contracts_sdk *.py
+include truther_contracts_sdk/*.py
