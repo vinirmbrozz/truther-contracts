@@ -18,7 +18,7 @@ jobs:
 
       - name: Install TypeScript Protobuf Plugin
         run: |
-          npm install -g ts-proto
+          npm install ts-proto
 
       - name: Create Output Directory
         run: |
@@ -27,7 +27,7 @@ jobs:
       - name: Compile Protobuf to TypeScript
         run: |
           protoc --proto_path=proto \
-            --plugin=protoc-gen-ts_proto=./node_modules/.bin/ts-proto \
+            --plugin=protoc-gen-ts_proto=$(npm root)/ts-proto/protoc-gen-ts_proto \
             --ts_proto_out=gen/typescript \
             --ts_proto_opt=esModuleInterop=true \
             proto/transaction.proto
