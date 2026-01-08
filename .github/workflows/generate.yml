@@ -16,7 +16,8 @@ jobs:
         run: npm install
 
       - name: Generate All SDKs (Node, Go, Python)
-        run: npx buf generate
+        # O buf-setup-action já coloca o 'buf' no PATH. Não use npx aqui.
+        run: buf generate
 
       - name: Build TypeScript for Node
         run: npx tsc
