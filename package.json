@@ -2,11 +2,9 @@
   "name": "truther-contracts",
   "version": "1.0.0",
   "type": "module",
-  "main": "./gen/node/transaction_pb.js",
+  "main": "index.js",
   "dependencies": {
     "google-protobuf": "^3.21.2"
   },
-  "devDependencies": {
-    "protoc-gen-js": "^3.21.2"
-  }
+  "description": "SDKs para Node, Go e Python gerados via Protobuf"
 }
