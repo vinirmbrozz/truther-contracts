@@ -1,4 +1,5 @@
-name: Generate All SDKs
+
+name: Generate SDKs
 on: [push]
 jobs:
   generate:
@@ -9,42 +10,27 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20'
-          # Removido a linha 'cache: npm' para não dar erro de lock file
+          node-version: '18'
 
-      - name: Setup Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: '1.21'
-
-      - name: Setup Buf
-        uses: bufbuild/buf-setup-action@v1
-
-      - name: Install Dependencies and Plugins
+      - name: Install Protoc and Plugins
         run: |
           sudo apt-get update && sudo apt-get install -y protobuf-compiler
-          
-          # Instala o plugin ts-proto
-          npm install ts-proto typescript
-          
-          # CRIA UM LINK DIRETO: O segredo para o Buf achar o plugin
-          sudo ln -s $(pwd)/node_modules/.bin/protoc-gen-ts_proto /usr/local/bin/protoc-gen-ts_proto
-          
-          # Instala plugin Go
+          # Instalamos o plugin de JS e o compilador de Go
+          npm install -g protoc-gen-js
           go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-          
-          # Garante que o Go também está no PATH
           echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
+      - name: Create Output Directories
+        run: mkdir -p gen/node gen/go gen/python
 
-      - name: Run Buf Generate
-        run: buf generate
-
-      - name: Build Node SDK
-        run: npx tsc
-
+      - name: Compile Protobuf
+        run: |
+          protoc --proto_path=proto \
+          --js_out=import_style=commonjs,binary:gen/node \
+          --go_out=gen/go --go_opt=paths=source_relative \
+          --python_out=gen/python \
+          proto/transaction.proto
       - name: Commit and Push
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: "chore: build SDKs for Node, Go and Python [skip ci]"
-          # Adicionado package-lock.json no commit para as próximas vezes o cache funcionar
-          file_pattern: 'gen/** dist/** index.ts package-lock.json'
+          commit_message: "chore: update generated SDKs [skip ci]"
+          file_pattern: 'gen/*'

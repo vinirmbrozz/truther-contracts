@@ -1,5 +1,0 @@
-version: v1
-build:
-  # Isso impede que o Buf tente compilar os arquivos duplicados da node_modules
-  excludes:
-    - node_modules

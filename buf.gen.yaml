@@ -1,20 +1,18 @@
 version: v1
 plugins:
-  # O Buf buscará o executável 'protoc-gen-ts-proto' no PATH
-  - name: ts-proto
+  # Reflete o --js_out do seu generate.yml
+  - name: js
     out: gen/node
     opt:
-      - esModuleInterop=true
-      - outputJsonMethods=true
-      - forceLong=string
-    strategy: all
+      - import_style=commonjs
+      - binary
 
-  # O Buf buscará o executável 'protoc-gen-go' no PATH
+  # Reflete o --go_out do seu generate.yml
   - name: go
     out: gen/go
     opt:
       - paths=source_relative
 
-  # O Buf usará o suporte nativo/local para Python
+  # Reflete o --python_out do seu generate.yml
   - name: python
     out: gen/python
