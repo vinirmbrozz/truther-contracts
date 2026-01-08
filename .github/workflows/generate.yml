@@ -22,6 +22,12 @@ jobs:
       - name: Create Output Directories
         run: mkdir -p gen/node gen/go gen/python
 
+      - name: Create Output Directories
+        run: |
+          mkdir -p gen/node gen/go gen/python
+          # Adicione esta linha AQUI para isolar a pasta gen como CommonJS
+          echo '{"type": "commonjs"}' > gen/node/package.json
+
       - name: Compile Protobuf
         run: |
           protoc --proto_path=proto \
