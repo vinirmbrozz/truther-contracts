@@ -1,6 +1,6 @@
 version: v1
 plugins:
-  # 1. NODE.JS (TypeScript)
+  # Node/TypeScript
   - name: ts-proto
     out: gen/node
     opt:
@@ -9,12 +9,12 @@ plugins:
       - forceLong=string
     strategy: all
 
-  # 2. GO
+  # Go
   - name: go
     out: gen/go
     opt:
       - paths=source_relative
 
-  # 3. PYTHON
+  # Python
   - name: python
     out: gen/python
