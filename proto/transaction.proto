@@ -10,6 +10,7 @@ message PredictiveAnalyzer {
   string userId = 4;
   string walletAddress = 954859;
   string allowance = 6;
+  string transactionId = 7;
 }
 
 message Transaction {

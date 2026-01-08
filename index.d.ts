@@ -6,7 +6,8 @@ export namespace truther {
             setIsAllowed(value: boolean): void;
             getCardId(): string;
             setCardId(value: string): void;
-            // Adicione os outros campos conforme necessário
+            getTransactionId(): string;
+            setTransactionId(value: string): void;
             serializeBinary(): Uint8Array;
         }
 
@@ -17,6 +18,8 @@ export namespace truther {
             setPredictiveAnalyzer(value: PredictiveAnalyzer): void;
             getFinalDecision(): string;
             setFinalDecision(value: string): void;
+            getTransactionId(): string;
+            setTransactionId(value: string): void;
             serializeBinary(): Uint8Array;
             static deserializeBinary(bytes: Uint8Array): Transaction;
         }
