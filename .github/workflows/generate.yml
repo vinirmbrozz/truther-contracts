@@ -6,32 +6,34 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      - name: Install Protoc and Plugins
+      - name: Install Dependencies
         run: |
-          sudo apt-get update && sudo apt-get install -y protobuf-compiler
-          # Instalamos o plugin de JS e o compilador de Go
-          npm install -g protoc-gen-js
-          go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
+          sudo apt-get install -y protobuf-compiler
+          npm install ts-proto typescript
 
-      - name: Create Output Directories
-        run: mkdir -p gen/node gen/go gen/python
-
-      - name: Compile Protobuf
+      - name: Generate TypeScript Code
         run: |
-          protoc --proto_path=proto \
-          --js_out=import_style=commonjs,binary:gen/node \
-          --go_out=gen/go --go_opt=paths=source_relative \
-          --python_out=gen/python \
-          proto/transaction.proto
+          mkdir -p gen/node
+          protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto \
+            --ts_proto_out=gen/node \
+            --ts_proto_opt=esModuleInterop=true,outputJsonMethods=true \
+            --proto_path=proto \
+            proto/transaction.proto
+
+      - name: Build Library
+        run: |
+          # Cria um index.ts que exporta tudo
+          echo "export * from './gen/node/transaction.js';" > index.ts
+          # Compila o TS para JS + Declarações de Tipo
+          npx tsc index.ts --declaration --esModuleInterop --module ESNext --target ES2020 --moduleResolution node --outDir dist
 
       - name: Commit and Push
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: "chore: update generated SDKs [skip ci]"
-          file_pattern: 'gen/*'
+          commit_message: "feat: professional sdk generation [skip ci]"
+          file_pattern: 'dist/* gen/* index.ts'
