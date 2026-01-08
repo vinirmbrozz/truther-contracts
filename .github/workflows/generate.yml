@@ -1,6 +1,6 @@
-
-name: Generate SDKs
+name: Generate TypeScript SDK
 on: [push]
+
 jobs:
   generate:
     runs-on: ubuntu-latest
@@ -12,31 +12,28 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install Protoc and Plugins
+      - name: Install Protoc
         run: |
           sudo apt-get update && sudo apt-get install -y protobuf-compiler
-          # Instalamos o plugin de JS e o compilador de Go
-          npm install -g protoc-gen-js
-          go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
-      - name: Create Output Directories
-        run: mkdir -p gen/node gen/go gen/python
 
-      - name: Create Output Directories
+      - name: Install TypeScript Protobuf Plugin
         run: |
-          mkdir -p gen/node gen/go gen/python
-          # Adicione esta linha AQUI para isolar a pasta gen como CommonJS
-          echo '{"type": "commonjs"}' > gen/node/package.json
+          npm install -g ts-proto
 
-      - name: Compile Protobuf
+      - name: Create Output Directory
+        run: |
+          mkdir -p gen/typescript
+
+      - name: Compile Protobuf to TypeScript
         run: |
           protoc --proto_path=proto \
-          --js_out=import_style=commonjs,binary:gen/node \
-          --go_out=gen/go --go_opt=paths=source_relative \
-          --python_out=gen/python \
-          proto/transaction.proto
+            --plugin=protoc-gen-ts_proto=./node_modules/.bin/ts-proto \
+            --ts_proto_out=gen/typescript \
+            --ts_proto_opt=esModuleInterop=true \
+            proto/transaction.proto
+
       - name: Commit and Push
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: "chore: update generated SDKs [skip ci]"
-          file_pattern: 'gen/*'
+          commit_message: "chore: update generated TypeScript SDK [skip ci]"
+          file_pattern: 'gen/typescript/*'
