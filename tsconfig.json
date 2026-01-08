@@ -11,6 +11,6 @@
     },
     "include": [
         "gen/node/**/*.ts",
-        "index.ts"
+        "index.js"
     ]
 }
