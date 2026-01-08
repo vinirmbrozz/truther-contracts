@@ -24,13 +24,16 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y protobuf-compiler
           
-          # Isso vai instalar o ts-proto e criar o package-lock.json no ambiente do Runner
+          # Instala o plugin ts-proto
           npm install ts-proto typescript
           
+          # CRIA UM LINK DIRETO: O segredo para o Buf achar o plugin
+          sudo ln -s $(pwd)/node_modules/.bin/protoc-gen-ts_proto /usr/local/bin/protoc-gen-ts_proto
+          
+          # Instala plugin Go
           go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
           
-          # ADICIONA OS CAMINHOS AO PATH
-          echo "$(pwd)/node_modules/.bin" >> $GITHUB_PATH
+          # Garante que o Go também está no PATH
           echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
 
       - name: Run Buf Generate
