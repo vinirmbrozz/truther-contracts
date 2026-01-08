@@ -1,17 +1,16 @@
 name: Generate All SDKs
 on: [push]
-
 jobs:
   generate:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20'
+          cache: 'npm'
 
       - name: Setup Go
         uses: actions/setup-go@v4
@@ -21,35 +20,28 @@ jobs:
       - name: Setup Buf
         uses: bufbuild/buf-setup-action@v1
 
-      - name: Install Protoc and Plugins
+      - name: Install Dependencies and Plugins
         run: |
-          # Instala o compilador base
           sudo apt-get update && sudo apt-get install -y protobuf-compiler
-
-          # Instala plugin Node/TypeScript (ts-proto)
-          npm install -g ts-proto typescript
-
+          
+          # Instala localmente para garantir que os binários estejam em ./node_modules/.bin
+          npm install ts-proto typescript
+          
           # Instala plugin Go
           go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
           
-          # Adiciona os binários ao PATH para o Buf encontrá-los
+          # ADICIONA OS CAMINHOS AO PATH DO RUNNER
+          echo "$(pwd)/node_modules/.bin" >> $GITHUB_PATH
           echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
-          echo "$(npm config get prefix)/bin" >> $GITHUB_PATH
 
       - name: Run Buf Generate
-        run: |
-          # Removemos o 'remote' do buf.gen.yaml para usar os plugins instalados acima
-          buf generate
+        run: buf generate
 
-      - name: Build Node SDK (TypeScript to JavaScript)
-        run: |
-          # Garante que as dependências do package.json (como protobufjs) estão lá
-          npm install
-          # Compila o index.ts e gen/node para a pasta /dist
-          npx tsc
+      - name: Build Node SDK
+        run: npx tsc
 
       - name: Commit and Push
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: "chore: automated sdk generation (node, go, python) [skip ci]"
+          commit_message: "chore: build SDKs for Node, Go and Python [skip ci]"
           file_pattern: 'gen/** dist/** index.ts'
