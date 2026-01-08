@@ -1,0 +1,17 @@
+{
+    "name": "@truther/contracts-sdk",
+    "version": "1.0.0",
+    "description": "TypeScript SDK for Truther Contracts",
+    "main": "transaction.js",
+    "types": "transaction.ts",
+    "scripts": {
+        "build": "tsc"
+    },
+    "keywords": [
+        "truther",
+        "contracts",
+        "protobuf"
+    ],
+    "author": "Vinícius Rodrigues",
+    "license": "MIT"
+}
