@@ -10,7 +10,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20'
-          cache: 'npm'
+          # Removido a linha 'cache: npm' para não dar erro de lock file
 
       - name: Setup Go
         uses: actions/setup-go@v4
@@ -24,13 +24,12 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y protobuf-compiler
           
-          # Instala localmente para garantir que os binários estejam em ./node_modules/.bin
+          # Isso vai instalar o ts-proto e criar o package-lock.json no ambiente do Runner
           npm install ts-proto typescript
           
-          # Instala plugin Go
           go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
           
-          # ADICIONA OS CAMINHOS AO PATH DO RUNNER
+          # ADICIONA OS CAMINHOS AO PATH
           echo "$(pwd)/node_modules/.bin" >> $GITHUB_PATH
           echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
 
@@ -44,4 +43,5 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "chore: build SDKs for Node, Go and Python [skip ci]"
-          file_pattern: 'gen/** dist/** index.ts'
+          # Adicionado package-lock.json no commit para as próximas vezes o cache funcionar
+          file_pattern: 'gen/** dist/** index.ts package-lock.json'
