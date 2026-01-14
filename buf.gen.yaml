@@ -1,18 +1,18 @@
 version: v1
 plugins:
-  # Reflete o --js_out do seu generate.yml
+  # Reflete o --js_out
   - name: js
     out: gen/node
     opt:
       - import_style=commonjs
       - binary
 
-  # Reflete o --go_out do seu generate.yml
+  # Reflete o --go_out
   - name: go
     out: gen/go
     opt:
       - paths=source_relative
 
-  # Reflete o --python_out do seu generate.yml
+  # Reflete o --python_out
   - name: python
     out: gen/python

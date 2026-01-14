@@ -4,7 +4,7 @@ const require = createRequire(import.meta.url);
 // Importa o arquivo gerado pelo protoc
 const messages = require('./gen/node/transaction_pb.js');
 
-// Exporta as classes para que seu teste as encontre
+// Exporta as classes
 export const {
     Transaction,
     PredictiveAnalyzer,

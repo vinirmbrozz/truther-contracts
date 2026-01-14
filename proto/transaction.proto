@@ -8,13 +8,13 @@ message PredictiveAnalyzer {
   string reason = 2;
   string cardId = 3;
   string userId = 4;
-  string walletAddress = 954859;
+  string walletAddress = 5;
   string allowance = 6;
   string transactionId = 7;
 }
 
 message Transaction {
-  string transactionAmount = 1;
+  string transactionAmount = 1 [(validate.rules).string.min_len = 1];
   PredictiveAnalyzer predictiveAnalyzer = 2;
-  string final_decision = 3;
+  string final_decision = 3 [(validate.rules).string.in = "APPROVED,DENIED"];
 }
