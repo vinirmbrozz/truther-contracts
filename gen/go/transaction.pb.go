@@ -29,6 +29,7 @@ type PredictiveAnalyzer struct {
 	UserId        string                 `protobuf:"bytes,4,opt,name=userId,proto3" json:"userId,omitempty"`
 	WalletAddress string                 `protobuf:"bytes,954859,opt,name=walletAddress,proto3" json:"walletAddress,omitempty"`
 	Allowance     string                 `protobuf:"bytes,6,opt,name=allowance,proto3" json:"allowance,omitempty"`
+	TransactionId string                 `protobuf:"bytes,7,opt,name=transactionId,proto3" json:"transactionId,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -105,6 +106,13 @@ func (x *PredictiveAnalyzer) GetAllowance() string {
 	return ""
 }
 
+func (x *PredictiveAnalyzer) GetTransactionId() string {
+	if x != nil {
+		return x.TransactionId
+	}
+	return ""
+}
+
 type Transaction struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
 	TransactionAmount  string                 `protobuf:"bytes,1,opt,name=transactionAmount,proto3" json:"transactionAmount,omitempty"`
@@ -169,14 +177,15 @@ var File_transaction_proto protoreflect.FileDescriptor
 
 const file_transaction_proto_rawDesc = "" +
 	"\n" +
-	"\x11transaction.proto\x12\x13truther.transaction\"\xc0\x01\n" +
+	"\x11transaction.proto\x12\x13truther.transaction\"\xe6\x01\n" +
 	"\x12PredictiveAnalyzer\x12\x1c\n" +
 	"\tisAllowed\x18\x01 \x01(\bR\tisAllowed\x12\x16\n" +
 	"\x06reason\x18\x02 \x01(\tR\x06reason\x12\x16\n" +
 	"\x06cardId\x18\x03 \x01(\tR\x06cardId\x12\x16\n" +
 	"\x06userId\x18\x04 \x01(\tR\x06userId\x12&\n" +
 	"\rwalletAddress\x18\xeb\xa3: \x01(\tR\rwalletAddress\x12\x1c\n" +
-	"\tallowance\x18\x06 \x01(\tR\tallowance\"\xbb\x01\n" +
+	"\tallowance\x18\x06 \x01(\tR\tallowance\x12$\n" +
+	"\rtransactionId\x18\a \x01(\tR\rtransactionId\"\xbb\x01\n" +
 	"\vTransaction\x12,\n" +
 	"\x11transactionAmount\x18\x01 \x01(\tR\x11transactionAmount\x12W\n" +
 	"\x12predictiveAnalyzer\x18\x02 \x01(\v2'.truther.transaction.PredictiveAnalyzerR\x12predictiveAnalyzer\x12%\n" +

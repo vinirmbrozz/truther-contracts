@@ -16,6 +16,7 @@ export interface PredictiveAnalyzer {
   userId: string;
   walletAddress: string;
   allowance: string;
+  transactionId: string;
 }
 
 export interface Transaction {
@@ -25,7 +26,7 @@ export interface Transaction {
 }
 
 function createBasePredictiveAnalyzer(): PredictiveAnalyzer {
-  return { isAllowed: false, reason: "", cardId: "", userId: "", walletAddress: "", allowance: "" };
+  return { isAllowed: false, reason: "", cardId: "", userId: "", walletAddress: "", allowance: "", transactionId: "" };
 }
 
 export const PredictiveAnalyzer: MessageFns<PredictiveAnalyzer> = {
@@ -47,6 +48,9 @@ export const PredictiveAnalyzer: MessageFns<PredictiveAnalyzer> = {
     }
     if (message.allowance !== "") {
       writer.uint32(50).string(message.allowance);
+    }
+    if (message.transactionId !== "") {
+      writer.uint32(58).string(message.transactionId);
     }
     return writer;
   },
@@ -106,6 +110,14 @@ export const PredictiveAnalyzer: MessageFns<PredictiveAnalyzer> = {
           message.allowance = reader.string();
           continue;
         }
+        case 7: {
+          if (tag !== 58) {
+            break;
+          }
+
+          message.transactionId = reader.string();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -123,6 +135,7 @@ export const PredictiveAnalyzer: MessageFns<PredictiveAnalyzer> = {
       userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
       walletAddress: isSet(object.walletAddress) ? globalThis.String(object.walletAddress) : "",
       allowance: isSet(object.allowance) ? globalThis.String(object.allowance) : "",
+      transactionId: isSet(object.transactionId) ? globalThis.String(object.transactionId) : "",
     };
   },
 
@@ -146,6 +159,9 @@ export const PredictiveAnalyzer: MessageFns<PredictiveAnalyzer> = {
     if (message.allowance !== "") {
       obj.allowance = message.allowance;
     }
+    if (message.transactionId !== "") {
+      obj.transactionId = message.transactionId;
+    }
     return obj;
   },
 
@@ -160,6 +176,7 @@ export const PredictiveAnalyzer: MessageFns<PredictiveAnalyzer> = {
     message.userId = object.userId ?? "";
     message.walletAddress = object.walletAddress ?? "";
     message.allowance = object.allowance ?? "";
+    message.transactionId = object.transactionId ?? "";
     return message;
   },
 };
