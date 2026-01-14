@@ -14,7 +14,7 @@ message PredictiveAnalyzer {
 }
 
 message Transaction {
-  string transactionAmount = 1 [(validate.rules).string.min_len = 1];
+  string transactionAmount = 1;
   PredictiveAnalyzer predictiveAnalyzer = 2;
-  string final_decision = 3 [(validate.rules).string.in = "APPROVED,DENIED"];
+  string final_decision = 3;
 }
